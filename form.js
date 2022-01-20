@@ -10,7 +10,7 @@ const Port = process.env.PORT || 8000;
 var sampleFile;
 var uploadPath;
 const open = require('open');
-
+const zip = require('express-zip');
 //use the application off of express.
 var app = express();
 app.use(fileUpload());
@@ -18,6 +18,8 @@ app.use(fileUpload());
 app.get("/", function (request, response) {
     response.sendFile(__dirname + "/index1.html");
 });
+
+
 app.post('/upload', function (req, res) {
 
 
@@ -52,6 +54,7 @@ app.listen(Port, function () {
 //define the route for "/"
 
 
+
 app.get("/getvalue", function (request, response) {
     var inputFile = request.query.inputFile;
     var isInitializedcheck = request.query.isInitialized;
@@ -67,11 +70,16 @@ app.get("/getvalue", function (request, response) {
 
     if (inputFile != "") {
         try {
-            response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
+          console.log("dff")
+            response.sendFile(__dirname + "/index2.html");
+          //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
             //Create the output Page
 
             file = fs.createWriteStream(__dirname + "/outputFile/" + inputFile + '.page.js');
+          
+         
+
             for (let i = 1; i < pageSelectorFile.length; i++) {
                 for (let j = 1; j < pageSelectorFile.length; j++) {
                     pageSelectorGroup[i] = [];
@@ -151,6 +159,30 @@ app.get("/getvalue", function (request, response) {
 
 
             file.end();
+            app.get('/single',function(req,res) {
+                console.log('single file');
+                 
+                // Download function provided by express
+                res.download(__dirname + "/outputFile/" + inputFile + '.page.js', function(err) {
+                    if(err) {
+                        console.log(err);
+                    }
+                })
+            })
+            app.get('/multiple', function(req, res) {
+                console.log('Multiple file download')
+             
+                // zip method which take file path
+                // and name as objects
+                res.zip([
+                       { path: __dirname + "/outputFile/" + inputFile + '.page.js',
+                           name: + inputFile + '.page.js'},
+                       { path: __dirname + "/outputFile/" + 'selector.json',
+                           name: 'selector.json'},
+                       { path: __dirname + "/outputFile/" + 'appLangEN.json',
+                        name: 'appLangEN.json'}
+                ])
+            })
         }
         catch (err) {
             console.log(err)
