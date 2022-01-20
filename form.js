@@ -176,11 +176,9 @@ app.get("/getvalue", function (request, response) {
                 // and name as objects
                 res.zip([
                        { path: __dirname + "/outputFile/" + inputFile + '.page.js',
-                           name: + inputFile + '.page.js'},
+                           name:  inputFile + '.page.js'},
                        { path: __dirname + "/outputFile/" + 'selector.json',
-                           name: 'selector.json'},
-                       { path: __dirname + "/outputFile/" + 'appLangEN.json',
-                        name: 'appLangEN.json'}
+                           name: 'selector.json'}
                 ])
             })
         }
