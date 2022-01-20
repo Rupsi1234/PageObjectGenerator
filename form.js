@@ -6,7 +6,7 @@ var file, pageSelectorFile, arr = [], pageSelectorGroup = [], k , columnName;
 var parse = require('csv-parse');
 const fileUpload = require('express-fileupload');
 const { DH_CHECK_P_NOT_SAFE_PRIME } = require("constants");
-const PORT = process.env.PORT || 8000;
+const Port = process.env.PORT || 8000;
 var sampleFile;
 var uploadPath;
 const open = require('open');
@@ -46,8 +46,8 @@ app.post('/upload', function (req, res) {
     });
 });
 
-app.listen(PORT, function () {
-    console.log('Express server listening on port ', PORT); // eslint-disable-line
+app.listen(Port, function () {
+    console.log('Express server listening on port ', Port); // eslint-disable-line
 });
 //define the route for "/"
 
