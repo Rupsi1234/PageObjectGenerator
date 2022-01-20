@@ -6,7 +6,7 @@ var file, pageSelectorFile, arr = [], pageSelectorGroup = [], k , columnName;
 var parse = require('csv-parse');
 const fileUpload = require('express-fileupload');
 const { DH_CHECK_P_NOT_SAFE_PRIME } = require("constants");
-const PORT = 8000;
+const PORT = process.env.port || 8000;
 var sampleFile;
 var uploadPath;
 const open = require('open');

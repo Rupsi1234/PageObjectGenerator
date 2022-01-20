@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/wdio wdio.conf.js"
+    "test": "./node_modules/.bin/wdio wdio.conf.js",
+    "start": "node form.js"
   },
   "keywords": [],
   "author": "",
