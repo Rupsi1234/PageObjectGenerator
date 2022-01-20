@@ -178,7 +178,9 @@ app.get("/getvalue", function (request, response) {
                        { path: __dirname + "/outputFile/" + inputFile + '.page.js',
                            name:  inputFile + '.page.js'},
                        { path: __dirname + "/outputFile/" + 'selector.json',
-                           name: 'selector.json'}
+                           name: 'selector.json'},
+                       { path: __dirname + "/outputFile/" + 'appLangEN.json',
+                        name: 'appLangEN.json'}
                 ])
             })
         }
