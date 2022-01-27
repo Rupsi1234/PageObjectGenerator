@@ -70,7 +70,6 @@ app.get("/getvalue", function (request, response) {
 
     if (inputFile != "") {
         try {
-          console.log("dff")
             response.sendFile(__dirname + "/index2.html");
           //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
