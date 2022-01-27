@@ -74,7 +74,6 @@ app.get("/getvalue", function (request, response) {
           //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
             //Create the output Page
-console.log(__dirname + "/outputFile/" + inputFile + '.page.js')
             file = fs.createWriteStream(__dirname + "/outputFile/" + inputFile + '.page.js');
           
          
