@@ -1,0 +1,14 @@
+Label,cssSelector,tagName,group,relation,extraInfo,returnValue,teacherAppLangEN
+headingText,[data-tid='text-mainheading'],div,a,,,,"""One space for all your learning."""
+subheadingText,[data-tid=text-subheading],div,a,,,,"""Learn from anywhere, anytime. Instant access to all courses and activities."""
+signupBtn,[data-tid=button-register],button,a,,,,"""Sign Up & Start Learning Today"""
+loginBtn,[data-tid=button-login],button,a,,,,"""Log in"""
+landing_img, img[data-tid='image-landing'],img,a,,,,"""Have an Account?"""
+brandLogo_img,[data-tid='image-brandlogo'],img,b,,isInitilized,,
+selectedLangImg,[data-tid=dropdown-languageselector],img,b,,,,
+selectedLang,[data-tid=dropdown-languageselector] span>span,button,b,,,,
+languageSelector_dropdown,[data-tid=dropdown-languageselector] button,button,b,,,,
+languageSelector_dropdown_list,[data-tid*=dropdownitem],button,b,,,,
+loginLbl,[data-tid=text-haveanaccount],span,b,,,,
+footerLbl,[data-tid=text-poweredby],span,b,,,,
+footerImg,[data-tid=image-comprodls],img,b,,,,
