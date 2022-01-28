@@ -157,13 +157,17 @@ app.get("/getvalue", function (request, response) {
             }
             file.write("\n}\n\n")
 
-
             file.end();
+            console.log('single file'+inputFile);
             app.get('/single',function(req,res) {
-                console.log('single file'+__dirname + "/outputFile/" + inputFile + '.page.js');
-                 
-                // Download function provided by express
-                res.download(__dirname + "/outputFile/" + inputFile + '.page.js', function(err) {
+                console.log('single file'+inputFile);
+               // Download function provided by express
+                var text=req.headers.referer;
+                var mySubString = text.substring(
+                    text.indexOf("=") + 1, 
+                    text.lastIndexOf("&selectorJson")
+                );
+                res.download(__dirname + "/outputFile/" + mySubString + '.page.js', function(err) {
                     if(err) {
                         console.log(err);
                     }
@@ -171,11 +175,16 @@ app.get("/getvalue", function (request, response) {
             })
             app.get('/multiple', function(req, res) {
                 console.log('Multiple file download')
-             
+              // Download function provided by express
+              var text=req.headers.referer;
+              var mySubString = text.substring(
+                  text.indexOf("=") + 1, 
+                  text.lastIndexOf("&selectorJson")
+              );
                 // zip method which take file path
                 // and name as objects
                 res.zip([
-                       { path: __dirname + "/outputFile/" + inputFile + '.page.js',
+                       { path: __dirname + "/outputFile/" + mySubString + '.page.js',
                            name:  inputFile + '.page.js'},
                        { path: __dirname + "/outputFile/" + 'selector.json',
                            name: 'selector.json'},
