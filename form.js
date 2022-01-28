@@ -11,6 +11,7 @@ var sampleFile;
 var uploadPath;
 const open = require('open');
 const zip = require('express-zip');
+const { CONNREFUSED } = require("dns");
 //use the application off of express.
 var app = express();
 app.use(fileUpload());
@@ -158,11 +159,11 @@ app.get("/getvalue", function (request, response) {
             file.write("\n}\n\n")
 
             file.end();
-            console.log('single file'+inputFile);
             app.get('/single',function(req,res) {
                 console.log('single file'+inputFile);
                // Download function provided by express
                 var text=req.headers.referer;
+                console.log(text)
                 var mySubString = text.substring(
                     text.indexOf("=") + 1, 
                     text.lastIndexOf("&selectorJson")
@@ -176,16 +177,16 @@ app.get("/getvalue", function (request, response) {
             app.get('/multiple', function(req, res) {
                 console.log('Multiple file download')
               // Download function provided by express
-              var text=req.headers.referer;
-              var mySubString = text.substring(
-                  text.indexOf("=") + 1, 
-                  text.lastIndexOf("&selectorJson")
+              var text1=req.headers.referer;
+              var mySubString1 = text1.substring(
+                  text1.indexOf("=") + 1, 
+                  text1.lastIndexOf("&selectorJson")
               );
                 // zip method which take file path
                 // and name as objects
                 res.zip([
-                       { path: __dirname + "/outputFile/" + mySubString + '.page.js',
-                           name:  inputFile + '.page.js'},
+                       { path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                           name:  mySubString1 + '.page.js'},
                        { path: __dirname + "/outputFile/" + 'selector.json',
                            name: 'selector.json'},
                        { path: __dirname + "/outputFile/" + 'appLangEN.json',
