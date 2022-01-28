@@ -1,6 +1,5 @@
 var express = require("express");
 var fs = require('fs');
-const fsPromises = require('fs').promises 
 const PageTemplate = require('./PageTemplate.json');
 const cssProperty = require('./property.json');
 var file, pageSelectorFile, arr = [], pageSelectorGroup = [], k , columnName;
@@ -15,18 +14,8 @@ const zip = require('express-zip');
 //use the application off of express.
 var app = express();
 app.use(fileUpload());
-const fsExtra = require('fs-extra')
+
 app.get("/", function (request, response) {
-        const directory = __dirname + "/outputFile/"
-        fs.readdir(directory, (err, files) => {
-            if (err) throw err;
-            
-            for (const file of files) {
-                console.log(file + ' : File Deleted Successfully.');
-                fs.unlinkSync(directory+file);
-            }
-            
-          });
     response.sendFile(__dirname + "/index1.html");
 });
 
@@ -49,7 +38,7 @@ app.post('/upload', function (req, res) {
         if (err) {
             return res.status(500).send(err);
         }
-       
+
         res.sendFile(__dirname + "/pageObject.html");
         var parser = parse({ columns: true }, function (err, records) {
             pageSelectorFile = records;
@@ -81,11 +70,12 @@ app.get("/getvalue", function (request, response) {
 
     if (inputFile != "") {
         try {
+          console.log("dff")
             response.sendFile(__dirname + "/index2.html");
           //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
             //Create the output Page
-          
+
             file = fs.createWriteStream(__dirname + "/outputFile/" + inputFile + '.page.js');
           
          
