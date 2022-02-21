@@ -1,1 +1,2 @@
-web: npm run start
+web: npm start
+api: node form1.js
