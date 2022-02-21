@@ -1,2 +1,2 @@
-web: npm run start1
-api: npm run start
+api: npm run start1
+web: npm run start
