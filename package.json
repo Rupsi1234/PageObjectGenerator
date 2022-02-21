@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/wdio wdio.conf.js",
-    "start": "node form.js",
-    "heroku-postbuild": "node form.js"
+    "start": "node form.js"
   },
   "keywords": [],
   "author": "",
