@@ -1,2 +1,2 @@
-web: node form.js
+web: npm run start
 api: node form.js
