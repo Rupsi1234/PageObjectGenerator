@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/wdio wdio.conf.js",
-    "start": "node form1.js",
+    "start": "node form.js",
     "start1": "node form.js"
   },
   "keywords": [],
