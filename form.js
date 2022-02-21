@@ -15,9 +15,9 @@ const { CONNREFUSED } = require("dns");
 //use the application off of express.
 var app = express();
 app.use(fileUpload());
-const Path = require('path')
+//const Path = require('path')
 
-require(Path.join(__dirname, process.env.INDEX_PATH))
+//require(Path.join(__dirname, process.env.INDEX_PATH))
 
 app.get("/", function (request, response) {
     response.sendFile(__dirname + "/index1.html");
