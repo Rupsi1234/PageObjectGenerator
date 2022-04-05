@@ -74,7 +74,7 @@ app.get("/getvalue", function (request, response) {
 
     if (inputFile != "") {
         try {
-          console.log("dff")
+          console.log("dff"+inputFile)
             response.sendFile(__dirname + "/index2.html");
           //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
@@ -163,13 +163,12 @@ app.get("/getvalue", function (request, response) {
 
             file.end();
             app.get('/single',function(req,res) {
-                console.log('single file'+inputFile);
+                console.log('single file');
                // Download function provided by express
                 var text=req.headers.referer;
-                console.log(text)
                 var mySubString = text.substring(
                     text.indexOf("=") + 1, 
-                    text.lastIndexOf("&selectorJson")
+                    text.lastIndexOf("&pageHeader")
                 );
                 res.download(__dirname + "/outputFile/" + mySubString + '.page.js', function(err) {
                     if(err) {
@@ -183,7 +182,7 @@ app.get("/getvalue", function (request, response) {
               var text1=req.headers.referer;
               var mySubString1 = text1.substring(
                   text1.indexOf("=") + 1, 
-                  text1.lastIndexOf("&selectorJson")
+                  text1.lastIndexOf("&pageHeader")
               );
                 // zip method which take file path
                 // and name as objects

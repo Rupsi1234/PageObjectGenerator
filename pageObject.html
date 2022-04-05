@@ -1,179 +1,306 @@
-
+<!DOCTYPE html>
 <html>
 
 <head>
-    <title>Simple Page Generator</title>
-    <style>
-        .prompt {
-            font-size: 16px;
-            color: black;
-            font-weight: bold;
-        }
-
-        .container {
-            display: block;
-            position: relative;
-            padding-left: 100px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            font-size: 22px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        .container4 {
-            display: block;
-            position: relative;
-            margin-bottom: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            left: 600px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        .container3 {
-            display: block;
-            position: relative;
-            padding-left: 135px;
-            margin-bottom: 2px;
-            cursor: pointer;
-            font-size: 22px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        .container2 {
-            display: block;
-            position: relative;
-            padding-left: 200px;
-            margin-bottom: 5px;
-            cursor: pointer;
-            font-size: 22px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .left-pane {
-            width: 50%;
-            float: left;
-        }
-
-        .container1 {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-        }
-
-        .button {
-            background-color:black;
-            /* Green */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: underline;
-            display: inline-block;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .right-pane {
-            width: 50%;
-            float: right;
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 25px;
-            width: 25px;
-            background-color: #eee;
-        }
-
-        .submit-name {
-            background-color: black;
-            /* Green */
-            border: none;
-            left:600px;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: underline;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Engage QA Tools</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
 
-<body style="background-color:Lavender;">
-	<h1 style=" text-align: center; color: black; background-color:rgb(192, 187, 187);" > Page Object Generator (v0.2)</h1>
-    <form method='GET' action="/getvalue">
-        <div class="container3">
-            <h2>Step 2: </h2>
-            <div class="container1 prompt left-pane">
-          
-                    
-                        <h2>  Name of the Page Object*  </h2>
-              
-                <input class="container3" type="text" id="inputFile" name="inputFile" />
-       
-        </div>
-        <br>
-        <br>
-        <div class="prompt">
-                <h2 >Check Options</h2>
-</div>
-<div>
-    <label class="container"><input name="selectorJson" type="checkbox" value="selectorJson" checked="checked">selectorJson</label>
-</div>
-            <div>
-                <label class="container"><input name="pageHeader" type="checkbox" value="pageHeader" checked="checked">pageHeader</label>
-            </div>
-            <div>
-                <label class="container2"><input name="baseAction" type="checkbox"
-                        value="baseAction" checked="checked">baseAction</label>
-            </div>
-            <div>
-                <label class="container2"><input name="selectorFile" type="checkbox"
-                        value="selectorFile" checked="checked">selectorFile</label>
-            </div>
-            <div>
-                <label class="container"><input name="selectorDeclartion" type="checkbox"
-                        value="selectorDeclartion" checked="checked">selectorDeclartion</label>
-            </div>
-            <div>
-                <label class="container "><input name="isInitialized" type="checkbox"
-                        value="isInitialized" checked="checked">isInitialized</label>
-            </div>
-            <div>
-                <label class="container2"><input name="appShellPage" type="checkbox"
-                        value="appShellPage" checked="checked">appShellPage</label>
-            </div>
-            <div>
-                <label class="container"><input name="getData" type="checkbox" value="getData" checked="checked">getData</label>
-            </div>
-            <div>
-                <label class="container"><input name="clickFunction" type="checkbox" value="clickFunction" checked="checked">clickFunction</label>
-            </div>
-            <div>
-                <label class="container"><input name="setValueFunction" type="checkbox" value="setValueFunction" checked="checked">setValueFunction</label>
-            </div>
-        </div>
-        <button class="submit-name container">Generate</button>
+<body class="has-navbar-fixed-top">
+  <nav class="navbar has-background-grey-lighter is-fixed-top is-spaced has-shadow" role="navigation"
+    aria-label="main navigation">
+    <div class="navbar-brand">
+      <div class="navbar-item">
+        <img
+          src="https://config-qa.engage.comprodls.com/4eabb7df/difusion/expapp/ootb/v25/assets/images/engage_app.svg">
+      </div>
 
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasic">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbarBasic" class="navbar-menu">
+      <div class="navbar-start">
+        <!-- 
+        <a class="navbar-item">
+          Home
+        </a>
+      -->
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            App URLs
+          </a>
+
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://engage-difusion-dev1.comprodls.com/" target="_blank">
+              Engage - dev1
+            </a>
+
+            <a class="navbar-item" href="https://engage-difusion-dev2.comprodls.com/" target="_blank">
+              Engage - dev2
+            </a>
+
+            <a class="navbar-item" href="https://engage-dev2.comprodls.com/" target="_blank">
+              Engage - dev2 (generic)
+            </a>
+
+            <a class="navbar-item" href="https://backoffice-difusion-dev1.comprodls.com/" target="_blank">
+              Backoffice - dev1
+            </a>
+
+            <a class="navbar-item" href="https://backoffice-difusion-dev2.comprodls.com/" target="_blank">
+              Backoffice - dev2
+            </a>
+          </div>
         </div>
-    </form>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            Accessibility
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank">
+              W3C Guidelines
+            </a>
+
+            <a class="navbar-item"
+              href="https://docs.google.com/spreadsheets/d/1aJ2VL4rhSfHGFt2OtXKhfvH0QlMwq5eOfnGUUVTcht4/edit#gid=445513750"
+              target="_blank">
+              Guidelines for Engage
+            </a>
+
+            <a class="navbar-item"
+              href="https://docs.google.com/spreadsheets/d/1CMQ3C4LIoaNhRzWaN0FOfg3lQJwb3ubqqigadJoNdqc/edit#gid=0"
+              target="_blank">
+              QA Status
+            </a>
+
+            <a class="navbar-item" href="https://accessibilityinsights.io/en/downloads/" target="_blank">
+              Accessibility Tool
+            </a>
+          </div>
+        </div>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://projects.invisionapp.com/share/R510S1Q7X94A#/screens/454803500?browse"
+              target="_blank">
+              Engage IR Mocks
+            </a>
+            <a class="navbar-item" href="https://semaphoreci.com/comprodlsengage" target="_blank">
+              Semaphore
+            </a>
+            <a class="navbar-item" href="https://bitbucket.org/dashboard/repositories" target="_blank">
+              Bitbucket
+            </a>
+            <hr class="navbar-divider">
+            <a class="navbar-item has-text-grey-light" disabled>
+              Contact
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="buttons">
+        <button class="button">
+          <strong>Home</strong>
+        </button>
+        <form method='GET' action="/">
+          <button class="button">
+            <strong>Log Out</strong>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </nav>
+  <section class="section">
+    <div class="container">
+      <br>
+      <div class="level">
+        <p class="content title">Page Object Generator</p>
+        <div class="buttons is-right">
+          <button class="button is-link is-light" onclick="history.back()">Back</button>
+        </div>
+      </div>
+      <form method='GET' action="/getvalue">
+      <p class="subtitle">Step 2: Name Your Page Object</p>
+      <div class="field">
+        <!--label class="label">Name of the page object</label-->
+        <div class="control">
+          <input id="inputFile" name="inputFile" class="input" type="text" placeholder="Enter name of the page object" required>
+        </div>
+        <p class="help is-danger">
+          This field is required
+        </p>
+      </div>
+      <br>
+      <div class="columns is-desktop is-unselectable">
+        <div class="column">
+          <aside class="menu">
+            <p class="menu-label">
+              Header
+            </p>
+            <ul class="menu-list">
+              <li>
+                <label class="checkbox">
+                  <input name="pageHeader" type="checkbox" value="pageHeader" checked>
+                  Include "use strict;"
+                </label>
+              </li>
+              <li>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input name="baseAction" type="checkbox"
+                      value="baseAction" checked>
+                      Include base action library
+                    </label>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input  name="selectorFile" type="checkbox"
+                      value="selectorFile" checked>
+                      Include selector file
+                    </label>
+                    <ul>
+                      <li>
+                        <div class="field">
+                          <div class="control">
+                            <label class="checkbox">
+                              <input name="selectorDeclartion" type="checkbox"
+                              value="selectorDeclartion" checked>
+                              Include selector declarations
+                            </label>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </aside>
+        </div>
+        
+        <div class="column">
+          <aside class="menu">
+            <p class="menu-label">
+              Functions
+            </p>
+            <ul class="menu-list">
+              <li>
+                <label class="checkbox">
+                  <input name="isInitialized" type="checkbox"
+                  value="isInitialized" checked="checked" checked>
+                  Include isInitialized function
+                </label>
+                <ul>
+                  <li>
+                    <div class="field">
+                      <div class="control">
+                        <label class="checkbox">
+                          <input name="appShellPage" type="checkbox"
+                          value="appShellPage" checked>
+                          Include app shell
+                        </label>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <label class="checkbox">
+                  <input name="getData" type="checkbox" value="getData" checked>
+                  Include get data functions
+                </label>
+              </li>
+              <li>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input name="clickFunction" type="checkbox" value="clickFunction" checked>
+                      Include click functions
+                    </label>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input name="setValueFunction" type="checkbox" value="setValueFunction" checked>
+                      Include set value functions
+                    </label>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </aside>
+        </div>
+
+        <div class="column">
+          <aside class="menu">
+            <p class="menu-label">
+              Other Options
+            </p>
+            <ul class="menu-list">
+              <li>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input name="selectorJson" type="checkbox" value="selectorJson" checked>
+                      Create selector json
+                    </label>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="field">
+                  <div class="control">
+                    <label class="checkbox">
+                      <input type="checkbox" checked>
+                      Create app data json
+                    </label>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </div>
+    <button class='button is-dark' >Next</button>
+
+    </div>
+</form>
+
+    </div>
+    <hr>
+  </section>
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        © 2022 Compro Technologies | All Rights Reserved
+      </p>
+    </div>
+  </footer>
 </body>
 
 </html>
