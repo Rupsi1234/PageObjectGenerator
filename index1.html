@@ -129,6 +129,11 @@
   <section class="section">
     <div class="container">
       <br>
+      <form ref='uploadForm' 
+			id="file_upload" 
+			action='/upload' 
+			method='post' 
+      encType="multipart/form-data">
       <div class="level">
         <p class="content title is-spaced">Page Object Generator</p>
         <div class="buttons is-right">
@@ -137,12 +142,8 @@
       </div>
 
       <p class="subtitle">Step 1: Upload Page Selector File (.csv)</p>
-	  	<form ref='uploadForm' 
-			id="file_upload" 
-			action='/upload' 
-			method='post' 
-      class="file has-name is-fullwidth"
-      encType="multipart/form-data">
+	  
+      <div  class="file has-name is-fullwidth">
         <label class="file-label">
           <input class="file-input" type="file" name="sampleFile" required>
           <span class="file-cta">
@@ -162,11 +163,14 @@
         This field is required
       </p>
       <br>
-      <input type='submit' class='button is-dark' value='Next' />
+   
+      <button  class="button is-dark" type='submit'>Next</button>
       <br>
-    </div>
-    <hr>
-	</form>
+  	</form>
+  </div>
+  <hr>
+
+
   </section>
   <footer class="footer">
     <div class="content has-text-centered">
