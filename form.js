@@ -354,21 +354,21 @@ function generatePageSelector(pageSelectorFile, inputFile) {
 //Basic isinitialize fucntion  
 function generateIsinitiazeFunction(pageSelectorFile, PageTemplate, param1) {
     var flag = false;
-    file.write("\n\nisInitialized: function ()\n{ \n" +
+    file.write("\n\nisInitialized: async function ()\n{ \n" +
         "var res;\n" +
-        "logger.logInto(stackTrace.get());\n" +
-        "action.waitForDocumentLoad();\nres = {\n")
+        "await logger.logInto(await stackTrace.get());\n" +
+        "await action.waitForDocumentLoad();\nres = {\n")
     for (var i = 0; i < pageSelectorFile.length; i++) {
         // console.log(pageSelectorFile[i].extraInfo)
         if ((pageSelectorFile[i].extraInfo).toLowerCase().includes("isinitialization")) {
             //   console.log(pageSelectorFile[i].Label)
-            file.write("pageStatus: action.waitForDisplayed(this." + pageSelectorFile[i].Label + "),\n")
+            file.write("pageStatus:await action.waitForDisplayed(this." + pageSelectorFile[i].Label + "),\n")
             flag = true;
             break;
         }
     }
     if (flag == false) {
-        file.write("pageStatus:  action.waitForDisplayed(this." + pageSelectorFile[0].Label + "),\n")// to be decided about the by default label to be selected
+        file.write("pageStatus: await  action.waitForDisplayed(this." + pageSelectorFile[0].Label + "),\n")// to be decided about the by default label to be selected
     }
     if (param1)
         file.write(PageTemplate.isInitialized[param1])
@@ -380,8 +380,8 @@ function generateIsinitiazeFunction(pageSelectorFile, PageTemplate, param1) {
 }
 
 function generateGetDatafunction(pageSelectorFile, key) {
-    file.write(key + "_Data: function ()\n{  \n")
-    file.write("logger.logInto(stackTrace.get());\n var obj;\n obj = {\n")
+    file.write(key + "_Data: async function ()\n{  \n")
+    file.write("await logger.logInto(await stackTrace.get());\n var obj;\n obj = {\n")
 
     for (var i = 0; i < pageSelectorFile.length; i++) {
         if ((pageSelectorFile[i].extraInfo).toLowerCase().includes("pattern")) {
@@ -389,12 +389,12 @@ function generateGetDatafunction(pageSelectorFile, key) {
         }
         else {
             if (pageSelectorFile[i].tagName.toLowerCase().includes("img") || pageSelectorFile[i].tagName.toLowerCase().includes("svg")) {
-                file.write(pageSelectorFile[i].Label + ":(action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0) ? action.waitForDisplayed(this." + pageSelectorFile[i].Label + ") : false,\n");
+                file.write(pageSelectorFile[i].Label + ":((await action.getElementCount(this." + pageSelectorFile[i].Label + ")) > 0) ? await action.waitForDisplayed(this." + pageSelectorFile[i].Label + ") : false,\n");
             } else {
                 if ((pageSelectorFile[i].tagName).toLowerCase().includes("input") || (pageSelectorFile[i].tagName).toLowerCase().includes("textarea"))
-                    file.write(pageSelectorFile[i].Label + ": (action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0) ? action.getAttribute(this." + pageSelectorFile[i].Label + ", \"placeholder\") : null,\n")
+                    file.write(pageSelectorFile[i].Label + ": ((await action.getElementCount(this." + pageSelectorFile[i].Label + ")) > 0) ? await action.getAttribute(this." + pageSelectorFile[i].Label + ", \"placeholder\") : null,\n")
                 else
-                    file.write(pageSelectorFile[i].Label + ":(action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0) ? action.getText(this." + pageSelectorFile[i].Label + ") : null,\n");
+                    file.write(pageSelectorFile[i].Label + ":((await action.getElementCount(this." + pageSelectorFile[i].Label + ")) > 0) ? await action.getText(this." + pageSelectorFile[i].Label + ") : null,\n");
             }
         }
     }
@@ -413,7 +413,7 @@ function generategetCssPropertyData(pageSelectorFile, key, cssProperty) {
         }
     }
     if (cssPropertyState == true) {
-        file.write("getCssPropertyData: function ()\n{\n  logger.logInto(stackTrace.get()); \nvar obj;\n obj = {\n")
+        file.write("getCssPropertyData: async function ()\n{\n await logger.logInto(await stackTrace.get()); \nvar obj;\n obj = {\n")
 
         for (var i = 0; i < pageSelectorFile.length; i++) {
             if ((pageSelectorFile[i].extraInfo).toLowerCase().includes("cssproperty")) {
@@ -423,7 +423,7 @@ function generategetCssPropertyData(pageSelectorFile, key, cssProperty) {
                 for (var j = 0; j < cssProperty.cssProperty[cssSelectorTagGroup].length; j++) {
                     var labelValue = cssProperty.cssProperty[cssSelectorTagGroup][j]
                     labelValue = labelValue.replace(/-|\s/g, "")
-                    file.write(pageSelectorFile[i].Label + "_" + labelValue + ": action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0 ? action.getCSSProperty(this." + pageSelectorFile[i].Label + ", '" + cssProperty.cssProperty[cssSelectorTagGroup][j] + "').value : null,\n")
+                    file.write(pageSelectorFile[i].Label + "_" + labelValue + ":await action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0 ? await action.getCSSProperty(this." + pageSelectorFile[i].Label + ", '" + cssProperty.cssProperty[cssSelectorTagGroup][j] + "').value : null,\n")
                 }
 
             }
@@ -464,15 +464,15 @@ function listDataGenerate1(pageSelectorFile) {
 
     for (var i = 0; i < pageSelectorFile.length; i++) {
         if (((pageSelectorFile[i].extraInfo).toLowerCase().includes("pattern"))) {
-            file.write(pageSelectorFile[i].Label + "_Data: function ()\n {\n")
-            file.write("logger.logInto(stackTrace.get());\n")
+            file.write(pageSelectorFile[i].Label + "_Data: async function ()\n {\n")
+            file.write("await logger.logInto(await stackTrace.get());\n")
             file.write("var i, list;\n" +
                 "var " + pageSelectorFile[i].Label + "_Arr = [];\n" +
-                "list = action.findElements(this." + pageSelectorFile[i].Label + ");\n" +
+                "list =await  action.findElements(this." + pageSelectorFile[i].Label + ");\n" +
                 "for (i = 0; i < list.length; i++) {\n" +
-                pageSelectorFile[i].Label + "_Arr[i] = action.getText(list[i])\n" +
+                pageSelectorFile[i].Label + "_Arr[i] =await action.getText(list[i])\n" +
                 "}\n" +
-                "logger.logInto(stackTrace.get(), " + pageSelectorFile[i].Label + "_Arr);\n" +
+                "await logger.logInto(await stackTrace.get(), " + pageSelectorFile[i].Label + "_Arr);\n" +
                 "return " + pageSelectorFile[i].Label + "_Arr;\n},\n\n")
         }
 
@@ -505,11 +505,11 @@ function generateClickFunctions(pageSelectorFile, key, pageSelectorGroup, PageTe
 
 
             if (((pageSelectorFile[k].tagName).toLowerCase().includes("button")) && (!(pageSelectorFile[k].extraInfo).includes("pattern"))) {
-                file.write("\nclick_" + pageSelectorFile[k].Label + ": function () {\n" +
-                    "logger.logInto(stackTrace.get());\n" +
+                file.write("\nclick_" + pageSelectorFile[k].Label + ": async function () {\n" +
+                    "await logger.logInto(await stackTrace.get());\n" +
                     "var res;\n" +
-                    "res = action.click(this." + pageSelectorFile[k].Label + ");\n" +
-                    "if (true == res) {\n logger.logInto(stackTrace.get(), \" " + pageSelectorFile[k].Label + " is clicked\");\n")
+                    "res =await action.click(this." + pageSelectorFile[k].Label + ");\n" +
+                    "if (true == res) {\n await logger.logInto(await stackTrace.get(), \" " + pageSelectorFile[k].Label + " is clicked\");\n")
                 if ((pageSelectorFile[k].returnValue) != "") {
                     generateReturnPage(PageTemplate, pageSelectorFile[k].returnValue);
                     /*     if ((pageSelectorFile[k].returnValue).toLowerCase().includes(".page"))
@@ -519,7 +519,7 @@ function generateClickFunctions(pageSelectorFile, key, pageSelectorGroup, PageTe
      */
                 }
                 file.write(
-                    "}\nelse {\nlogger.logInto(stackTrace.get(), res +\"" + pageSelectorFile[k].Label + " is NOT clicked\", 'error');\n}\n")
+                    "}\nelse {\nawait logger.logInto(await stackTrace.get(), res +\"" + pageSelectorFile[k].Label + " is NOT clicked\", 'error');\n}\n")
                 file.write("return res;\n},\n")
 
 
@@ -578,26 +578,26 @@ function generategroupClickfunction(pageSelectorGroup, selectorName, pageSelecto
 }
 
 function Clickfunctionindex(textcondition, selectorName, seletorRow, PageTemplate) {
-    file.write("\nclick_" + selectorName + ": function (" + textcondition + "Name) {\n" +
-        "logger.logInto(stackTrace.get());\n" +
+    file.write("\nclick_" + selectorName + ": async function (" + textcondition + "Name) {\n" +
+        "await logger.logInto(await stackTrace.get());\n" +
         "var i, res;\n")
     if (textcondition != selectorName) {
-        file.write( "var " + textcondition + "  = action.findElements(this." + textcondition + ");\n" +
-            "var " + selectorName + " = action.findElements(this." + selectorName + ");\n" +
+        file.write( "var " + textcondition + "  = await action.findElements(this." + textcondition + ");\n" +
+            "var " + selectorName + " = await action.findElements(this." + selectorName + ");\n" +
             "for (i = 0; i < " + textcondition + ".length; i++) {\n" +
-            "if ((action.getText(" + textcondition + "[i]))== " + textcondition + "Name) {\n " +
-            "res = action.click(" + selectorName + "[i]);\n" +
+            "if (((await action.getText(" + textcondition + "[i])))== " + textcondition + "Name) {\n " +
+            "res = await action.click(" + selectorName + "[i]);\n" +
             "break;\n}\n" +
-            "}\nif (res == true) {\n  logger.logInto(stackTrace.get(), \" --" + selectorName + " clicked\");\n")
+            "}\nif (res == true) {\n await logger.logInto(await stackTrace.get(), \" --" + selectorName + " clicked\");\n")
     }
     else {
         file.write(
-            "var " + selectorName + " = action.findElements(this." + selectorName + ");\n" +
+            "var " + selectorName + " = await action.findElements(this." + selectorName + ");\n" +
             "for (i = 0; i < " + selectorName + ".length; i++) {\n" +
-            "if ((action.getText(" + selectorName + "[i]))== " + selectorName + "Name) {\n " +
-            "res = action.click(" + selectorName + "[i]);\n" +
+            "if ((await action.getText(" + selectorName + "[i])))== " + selectorName + "Name) {\n " +
+            "res = await action.click(" + selectorName + "[i]);\n" +
             "break;\n}\n" +
-            "}\nif (res == true) {\n  logger.logInto(stackTrace.get(), \" --" + selectorName + " clicked\");\n")
+            "}\nif (res == true) {\n  await logger.logInto(await stackTrace.get(), \" --" + selectorName + " clicked\");\n")
     }
     if ((seletorRow.returnValue) != "") {
         generateReturnPage(PageTemplate, seletorRow.returnValue);
@@ -606,21 +606,21 @@ function Clickfunctionindex(textcondition, selectorName, seletorRow, PageTemplat
     file.write(
 
         "} \nelse\n" +
-        "logger.logInto(stackTrace.get(), \" --" + selectorName + " NOT clicked\", \"error\")\n");
+        "await logger.logInto(await stackTrace.get(), \" --" + selectorName + " NOT clicked\", \"error\")\n");
 
     file.write("return res;\n},\n")
 }
 
 function Clickfunction(textcondition, selectorName, seletorRow, PageTemplate) {
-    file.write("\nclick_" + selectorName + ": function (" + textcondition + "Name) {\n" +
-        "logger.logInto(stackTrace.get());\n" +
+    file.write("\nclick_" + selectorName + ":async function (" + textcondition + "Name) {\n" +
+        "await logger.logInto(await stackTrace.get());\n" +
         "var i, list, res;\n" +
-        "list = action.findElements(this." + selectorName + ");\n" +
+        "list =await action.findElements(this." + selectorName + ");\n" +
         "for (i = 0; i < list.length; i++) {\n" +
-        "if ((action.getText(this." + textcondition + "+i+\"]\"))== " + textcondition + "Name) {\n " +
-        "res = action.click(list[i]);\n" +
+        "if ((( await action.getText(this." + textcondition + "+i+\"]\")))== " + textcondition + "Name) {\n " +
+        "res = await action.click(list[i]);\n" +
         "break;\n}\n" +
-        "}\nif (res == true) {\n  logger.logInto(stackTrace.get(), \" --" + selectorName + " clicked\");\n")
+        "}\nif (res == true) {\n await logger.logInto(await stackTrace.get(), \" --" + selectorName + " clicked\");\n")
     if ((seletorRow.returnValue) != "") {
         generateReturnPage(PageTemplate, seletorRow.returnValue);
 
@@ -628,7 +628,7 @@ function Clickfunction(textcondition, selectorName, seletorRow, PageTemplate) {
     file.write(
 
         "} \nelse\n" +
-        "logger.logInto(stackTrace.get(), \" --" + selectorName + " NOT clicked\", \"error\")\n");
+        "await logger.logInto(await stackTrace.get(), \" --" + selectorName + " NOT clicked\", \"error\")\n");
 
     file.write("return res;\n},\n")
 }
@@ -638,13 +638,13 @@ function generateReturnPage(PageTemplate, returnValue) {
     const returnValueArray = returnValue.split(",");
     if (returnValueArray.length == 1) {
         if ((returnValue).toLowerCase().includes(".page"))
-            file.write("res =require ('./" + returnValueArray[0] + "').isInitialized();\n")
+            file.write("res =await require ('./" + returnValueArray[0] + "').isInitialized();\n")
         else
-            file.write("res= this.getData_" + returnValueArray[0] + "();");
+            file.write("res= await this.getData_" + returnValueArray[0] + "();");
     }
     else {
 
-        file.write("res=action." + returnValueArray[0] + "(this." + returnValueArray[1])
+        file.write("res= await action." + returnValueArray[0] + "(this." + returnValueArray[1])
         if (returnValueArray.length > 2) {
             for (let i = 2; i < returnValueArray.length; i++)
                 file.write("," + returnValueArray[i])
@@ -657,20 +657,20 @@ function generateReturnPage(PageTemplate, returnValue) {
 function generateSetValueFunctions(pageSelectorFile) {
     for (var i = 0; i < pageSelectorFile.length; i++) {
         if ((pageSelectorFile[i].tagName).toLowerCase().includes("input") || (pageSelectorFile[i].tagName).toLowerCase().includes("textarea")) {
-            file.write("\nset_" + pageSelectorFile[i].Label + ": function (value)" + "{\nvar res;" +
-                "\nlogger.logInto(stackTrace.get());\n" +
-                "res = action.setValue(this." + pageSelectorFile[i].Label + ",value);\n" +
-                "if (true == res) {\nlogger.logInto(stackTrace.get(), \"Value is entered in " + pageSelectorFile[i].Label + "\");\n}" +
-                "else {\nlogger.logInto(stackTrace.get(), res + \"Value is NOT entered in " + pageSelectorFile[i].Label + "\", 'error');\n}\n" +
+            file.write("\nset_" + pageSelectorFile[i].Label + ":async  function (value)" + "{\nvar res;" +
+                "\nawait logger.logInto(await stackTrace.get());\n" +
+                "res =await action.setValue(this." + pageSelectorFile[i].Label + ",value);\n" +
+                "if (true == res) {\nawait logger.logInto(await stackTrace.get(), \"Value is entered in " + pageSelectorFile[i].Label + "\");\n}" +
+                "else {\nawait logger.logInto(await stackTrace.get(), res + \"Value is NOT entered in " + pageSelectorFile[i].Label + "\", 'error');\n}\n" +
                 "return res;\n},\n")
         }
         if ((pageSelectorFile[i].tagName).toLowerCase().includes("upload")) {
-            file.write("\nupload_" + pageSelectorFile[i].Label + ": function (testdata)" + "{\nvar res;" +
-                "\nlogger.logInto(stackTrace.get());\n" +
-                "res = action.uploadFile(testdata);\n" +
+            file.write("\nupload_" + pageSelectorFile[i].Label + ": async function (testdata)" + "{\nvar res;" +
+                "\nawait logger.logInto(await stackTrace.get());\n" +
+                "res = await action.uploadFile(testdata);\n" +
                 "if ((typeof res) === 'string') {\n" +
-                "res = action.setValue(this." + pageSelectorFile[i].Label + " , res);\n" +
-                "}\nlogger.logInto(stackTrace.get(), res);\n" +
+                "res = await action.setValue(this." + pageSelectorFile[i].Label + " , res);\n" +
+                "}\nawait logger.logInto(await stackTrace.get(), res);\n" +
                 "return res;\n},\n")
         }
 
@@ -708,19 +708,19 @@ function generategroupDatafunction(group, groupName) {
 }
 
 function dataPatternGenerate(pageSelectorFile, groupName) {
-    file.write("getData_" + groupName + ": function ()\n{\n")
-    file.write("logger.logInto(stackTrace.get());\n")
+    file.write("getData_" + groupName + ": async function ()\n{\n")
+    file.write("await logger.logInto(await stackTrace.get());\n")
     file.write("var obj;\n")
     file.write("obj = {\n")
     for (var i = 0; i < pageSelectorFile.length; i++) {
         if ((pageSelectorFile[i].extraInfo).toLowerCase().includes("pattern")) {
-            file.write(pageSelectorFile[i].Label + ": this." + pageSelectorFile[i].Label + "_Data(),\n")
+            file.write(pageSelectorFile[i].Label + ": await this." + pageSelectorFile[i].Label + "_Data(),\n")
         }
         else {
             if ((pageSelectorFile[i].tagName).toLowerCase().includes("img") || (pageSelectorFile[i].tagName).toLowerCase().includes("svg")) {
-                file.write(pageSelectorFile[i].Label + ":(action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0) ? action.waitForDisplayed(this." + pageSelectorFile[i].Label + ") : false,\n");
+                file.write(pageSelectorFile[i].Label + ":(( await action.getElementCount(this." + pageSelectorFile[i].Label + ")) > 0) ? await action.waitForDisplayed(this." + pageSelectorFile[i].Label + ") : false,\n");
             } else
-                file.write(pageSelectorFile[i].Label + ":(action.getElementCount(this." + pageSelectorFile[i].Label + ") > 0) ? action.getText(this." + pageSelectorFile[i].Label + ") : null,\n");
+                file.write(pageSelectorFile[i].Label + ":(( await action.getElementCount(this." + pageSelectorFile[i].Label + ")) > 0) ? await action.getText(this." + pageSelectorFile[i].Label + ") : null,\n");
         }
     }
     file.write("}\n return obj; \n},\n\n")
@@ -741,27 +741,27 @@ function dataPatternGenerateWithParent(groupSelectorData, groupName, key) {
         }
     }
     if (selectedText)
-        file.write("getData_" + groupName + ": function (" + selectedText + "Name)\n{\n")
+        file.write("getData_" + groupName + ": async function (" + selectedText + "Name)\n{\n")
     else
-        file.write("getData_" + groupName + ": function ()\n{\n")
-    file.write("logger.logInto(stackTrace.get());\n")
+        file.write("getData_" + groupName + ":async function ()\n{\n")
+    file.write("await logger.logInto(await stackTrace.get());\n")
     file.write("var obj=[];\n")
-    file.write("action.waitForDisplayed(this." + groupSelectorData[key].Label + ");\n" +
-        "var list = action.findElements(this." + groupSelectorData[key].Label + ");\n");
+    file.write(" await action.waitForDisplayed(this." + groupSelectorData[key].Label + ");\n" +
+        "var list = await action.findElements(this." + groupSelectorData[key].Label + ");\n");
 
 
     if (selectedText) {
         file.write(" if (" + selectedText + "Name) {" +
             "for (var i=0;i<list.length;i++){\n" +
-            "if (action.getText(this." + selectedText + " + i) == " + selectedText + "Name) {\n")
+            "if ((await action.getText(this." + selectedText + " + i) )== " + selectedText + "Name) {\n")
 
         file.write("obj[0] = {\n")
         for (var i = 0; i < groupSelectorData.length; i++) {
             if ((groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
                 if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                    file.write(groupSelectorData[i].Label + ":(action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\") > 0) ? action.waitForDisplayed(this." + groupSelectorData[i].Label + "+i+\"]\")  : false,\n");
+                    file.write(groupSelectorData[i].Label + ":(( await action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\")) > 0) ? await action.waitForDisplayed(this." + groupSelectorData[i].Label + "+i+\"]\")  : false,\n");
                 } else
-                    file.write(groupSelectorData[i].Label + ":(action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\")  > 0) ? action.getText(this." + groupSelectorData[i].Label + "+i+\"]\")  : null,\n");
+                    file.write(groupSelectorData[i].Label + ":(( await action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\"))  > 0) ? await action.getText(this." + groupSelectorData[i].Label + "+i+\"]\")  : null,\n");
 
             }
         }
@@ -769,9 +769,9 @@ function dataPatternGenerateWithParent(groupSelectorData, groupName, key) {
         for (var i = 0; i < groupSelectorData.length; i++) {
             if (!(groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
                 if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                    file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(this." + groupSelectorData[i].Label + ") > 0) ? action.waitForDisplayed(this." + groupSelectorData[i].Label + ")  : false\n");
+                    file.write("obj." + groupSelectorData[i].Label + "=(( await action.getElementCount(this." + groupSelectorData[i].Label + ")) > 0) ?await action.waitForDisplayed(this." + groupSelectorData[i].Label + ")  : false\n");
                 } else
-                    file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(this." + groupSelectorData[i].Label + ")  > 0) ? action.getText(this." + groupSelectorData[i].Label + ")  : null\n");
+                    file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(this." + groupSelectorData[i].Label + "))  > 0) ?await action.getText(this." + groupSelectorData[i].Label + ")  : null\n");
 
             }
         }
@@ -785,9 +785,9 @@ function dataPatternGenerateWithParent(groupSelectorData, groupName, key) {
         if ((groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             // console.log("groupName" + groupSelectorData[i].Label)
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                file.write(groupSelectorData[i].Label + ":(action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\") > 0) ? action.waitForDisplayed(this." + groupSelectorData[i].Label + "+i+\"]\")  : false,\n");
+                file.write(groupSelectorData[i].Label + ":((await action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\")) > 0) ? await action.waitForDisplayed(this." + groupSelectorData[i].Label + "+i+\"]\")  : false,\n");
             } else
-                file.write(groupSelectorData[i].Label + ":(action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\")  > 0) ? action.getText(this." + groupSelectorData[i].Label + "+i+\"]\")  : null,\n");
+                file.write(groupSelectorData[i].Label + ":(( await action.getElementCount(this." + groupSelectorData[i].Label + "+i+\"]\"))  > 0) ? await action.getText(this." + groupSelectorData[i].Label + "+i+\"]\")  : null,\n");
         }
     }
     file.write("}\n")
@@ -797,9 +797,9 @@ function dataPatternGenerateWithParent(groupSelectorData, groupName, key) {
     for (var i = 0; i < groupSelectorData.length; i++) {
         if (!(groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(this." + groupSelectorData[i].Label + ") > 0) ? action.waitForDisplayed(this." + groupSelectorData[i].Label + ")  : false\n");
+                file.write("obj." + groupSelectorData[i].Label + "=(( await action.getElementCount(this." + groupSelectorData[i].Label + ")) > 0) ?await action.waitForDisplayed(this." + groupSelectorData[i].Label + ")  : false\n");
             } else
-                file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(this." + groupSelectorData[i].Label + ")  > 0) ? action.getText(this." + groupSelectorData[i].Label + ")  : null\n");
+                file.write("obj." + groupSelectorData[i].Label + "=(( await action.getElementCount(this." + groupSelectorData[i].Label + "))  > 0) ?await action.getText(this." + groupSelectorData[i].Label + ")  : null\n");
 
         }
     }
@@ -817,9 +817,9 @@ function dataPatternGenerateWithCondition(groupSelectorData, groupName, key) {
         }
     }
     if (selectedText)
-        file.write("getData_" + groupName + ": function (" + selectedText + "Name)\n{\n")
+        file.write("getData_" + groupName + ": async function (" + selectedText + "Name)\n{\n")
     else
-        file.write("getData_" + groupName + ": function ()\n{\n")
+        file.write("getData_" + groupName + ":async  function ()\n{\n")
     file.write("logger.logInto(stackTrace.get());\n")
     file.write("var obj =[] , i , arr = [];\n")
     for (var i = 0; i < groupSelectorData.length; i++) {
@@ -828,15 +828,15 @@ function dataPatternGenerateWithCondition(groupSelectorData, groupName, key) {
 
     file.write(" if (" + selectedText + "Name) {" +
         "for (var i=0;i<=" + selectedText + ".length;i++){\n" +
-        "if (action.getText(" + selectedText + "[i]) == " + selectedText + "Name) {\n")
+        "if ((await action.getText(" + selectedText + "[i])) == " + selectedText + "Name) {\n")
 
     file.write("obj[0] = {\n")
     for (var i = 0; i < groupSelectorData.length; i++) {
         if ((groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                file.write(groupSelectorData[i].Label + ":(action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0) ? action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false,\n");
+                file.write(groupSelectorData[i].Label + ":((await action.getElementCount(" + groupSelectorData[i].Label + "[i])) > 0) ? await action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false,\n");
             } else
-                file.write(groupSelectorData[i].Label + ":(action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0) ? action.getText(" + groupSelectorData[i].Label + "[i])  : null,\n");
+                file.write(groupSelectorData[i].Label + ":((await action.getElementCount(" + groupSelectorData[i].Label + "[i]))  > 0) ? await action.getText(" + groupSelectorData[i].Label + "[i])  : null,\n");
 
         }
     }
@@ -844,9 +844,9 @@ function dataPatternGenerateWithCondition(groupSelectorData, groupName, key) {
     for (var i = 0; i < groupSelectorData.length; i++) {
         if (!(groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0) ? action.waitForDisplayed(" + groupSelectorData[i].Label + "[i] )  : false\n");
+                file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0)) ?await action.waitForDisplayed(" + groupSelectorData[i].Label + "[i] )  : false\n");
             } else
-                file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0) ? action.getText(" + groupSelectorData[i].Label + "[i])  : null\n");
+                file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0)) ? await action.getText(" + groupSelectorData[i].Label + "[i])  : null\n");
 
         }
     }
@@ -860,9 +860,9 @@ function dataPatternGenerateWithCondition(groupSelectorData, groupName, key) {
         if ((groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             // console.log("groupName" + groupSelectorData[i].Label)
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                file.write(groupSelectorData[i].Label + ":(action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0) ? action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false,\n");
+                file.write(groupSelectorData[i].Label + ":((await action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0)) ? await action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false,\n");
             } else
-                file.write(groupSelectorData[i].Label + ":(action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0) ? action.getText(" + groupSelectorData[i].Label + "[i])  : null,\n");
+                file.write(groupSelectorData[i].Label + ":((await action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0)) ? await action.getText(" + groupSelectorData[i].Label + "[i])  : null,\n");
         }
     }
     file.write("}\n}\n")
@@ -872,9 +872,9 @@ function dataPatternGenerateWithCondition(groupSelectorData, groupName, key) {
     for (var i = 0; i < groupSelectorData.length; i++) {
         if (!(groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
-                file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0) ? action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false\n");
+                file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0)) ? await action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false\n");
             } else
-                file.write("obj." + groupSelectorData[i].Label + "=(action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0) ? action.getText(" + groupSelectorData[i].Label + "[i])  : null\n");
+                file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0)) ?await action.getText(" + groupSelectorData[i].Label + "[i])  : null\n");
 
         }
     }

@@ -4,7 +4,7 @@
     "selectorFile": "var selectorFile = jsonParserUtil.jsonParser(selectorDir)"
   },
   "isInitialized": {
-    "appShellPage": " appShellPage:appShellPage.isInitialized()",
+    "appShellPage": " appShellPage: await appShellPage.isInitialized()",
     "appShellPageDeclartion": "\nvar appShellPage = require('./appShell.page.js')"
   },
   "returnValue": 
