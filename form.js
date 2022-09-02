@@ -2,10 +2,9 @@ var express = require("express");
 var fs = require('fs');
 const PageTemplate = require('./PageTemplate.json');
 const cssProperty = require('./property.json');
-var file, pageSelectorFile, arr = [], pageSelectorGroup = [], k , columnName;
+var file, pageSelectorFile, arr = [], pageSelectorGroup = [], k, columnName;
 var parse = require('csv-parse');
 const fileUpload = require('express-fileupload');
-const { DH_CHECK_P_NOT_SAFE_PRIME } = require("constants");
 const Port = process.env.PORT || 8000;
 var sampleFile;
 var uploadPath;
@@ -74,15 +73,15 @@ app.get("/getvalue", function (request, response) {
 
     if (inputFile != "") {
         try {
-          console.log("dff"+inputFile)
+            console.log("dff" + inputFile)
             response.sendFile(__dirname + "/index2.html");
-          //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
+            //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
             //Create the output Page
 
             file = fs.createWriteStream(__dirname + "/outputFile/" + inputFile + '.page.js');
-          
-         
+
+
 
             for (let i = 1; i < pageSelectorFile.length; i++) {
                 for (let j = 1; j < pageSelectorFile.length; j++) {
@@ -106,6 +105,7 @@ app.get("/getvalue", function (request, response) {
             }
             if (selectorJsonCheck) {
                 generatePageSelectorJson(pageSelectorFile, inputFile);
+                generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup);
                 generateAppDataJson(pageSelectorFile, inputFile) //for app data generation
             }
             if (pageHeaderCheck) {
@@ -162,37 +162,47 @@ app.get("/getvalue", function (request, response) {
             file.write("\n}\n\n")
 
             file.end();
-            app.get('/single',function(req,res) {
+            app.get('/single', function (req, res) {
                 console.log('single file');
-               // Download function provided by express
-                var text=req.headers.referer;
+                // Download function provided by express
+                var text = req.headers.referer;
                 var mySubString = text.substring(
-                    text.indexOf("=") + 1, 
+                    text.indexOf("=") + 1,
                     text.lastIndexOf("&pageHeader")
                 );
-                res.download(__dirname + "/outputFile/" + mySubString + '.page.js', function(err) {
-                    if(err) {
+                res.download(__dirname + "/outputFile/" + mySubString + '.page.js', function (err) {
+                    if (err) {
                         console.log(err);
                     }
                 })
             })
-            app.get('/multiple', function(req, res) {
+            app.get('/multiple', function (req, res) {
                 console.log('Multiple file download')
-              // Download function provided by express
-              var text1=req.headers.referer;
-              var mySubString1 = text1.substring(
-                  text1.indexOf("=") + 1, 
-                  text1.lastIndexOf("&pageHeader")
-              );
+                // Download function provided by express
+                var text1 = req.headers.referer;
+                var mySubString1 = text1.substring(
+                    text1.indexOf("=") + 1,
+                    text1.lastIndexOf("&pageHeader")
+                );
                 // zip method which take file path
                 // and name as objects
                 res.zip([
-                       { path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
-                           name:  mySubString1 + '.page.js'},
-                       { path: __dirname + "/outputFile/" + 'selector.json',
-                           name: 'selector.json'},
-                       { path: __dirname + "/outputFile/" + 'appLangEN.json',
-                        name: 'appLangEN.json'}
+                    {
+                        path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                        name: mySubString1 + '.page.js'
+                    },
+                    {
+                        path: __dirname + "/outputFile/" + 'selector.json',
+                        name: 'selector.json'
+                    },
+                    {
+                        path: __dirname + "/outputFile/" + 'appLangEN.json',
+                        name: 'appLangEN.json'
+                    },
+                    {
+                        path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
+                        name: mySubString1 + '.test.js'
+                    }
                 ])
             })
         }
@@ -219,16 +229,73 @@ function generatePageSelectorJson(pageSelectorFile, inputFile) {
     }
     file1.write("\n}\n}")
 }
+function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
+    var testCaseNumber=1;
+    file2 = fs.createWriteStream(__dirname + "/outputFile/" + inputFile + '.test.js');
+    file2.write("\"use strict\";\n")
+    file2.write("var " + inputFile + "= require('../../pages/engageExperienceApp/" + inputFile + ".page.js');");
+    file2.write("\nvar sts;\n\nmodule.exports = {\n");
+    for (var i = 0; i < pageSelectorFile.length; i++) {
+        if ((pageSelectorFile[i].tagName).toLowerCase().includes("button")) {
+            file2.write("ENG_" + (inputFile.substring(0,4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function () { \n")
+            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "();\n")
+            file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].Label + " are not Clicked\");")
+            if (pageSelectorFile[i].functionSupport !="") {
+                file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+                file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+            }
+            testCaseNumber++;
+            file2.write("\n},\n\n")
+        }
+        if ((pageSelectorFile[i].tagName).toLowerCase().includes("input") || (pageSelectorFile[i].tagName).toLowerCase().includes("textarea")) {
+            file2.write("ENG_" + (inputFile.substring(0,4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
+            file2.write("sts = await " + inputFile + ".set_" + pageSelectorFile[i].Label + "(testdata);\n")
+            file2.write("await assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].Label + " Values are not set\");")
+            if (pageSelectorFile[i].functionSupport !="") {
+                file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+                file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+            }
+            testCaseNumber++
+            file2.write("\n},\n\n")
+        }
+    }
+    for (var i = 1; i < pageSelectorGroup.length; i++) {
+
+        if (pageSelectorGroup[i].length > 0 && pageSelectorGroup[i][0].group!="") {
+            file2.write("ENG_" + (inputFile.substring(0,4)).toUpperCase()  + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
+            file2.write("sts = await " + inputFile + ".getData_" + pageSelectorGroup[i][0].group + "();\n")
+          
+            for (let j = 0; j < pageSelectorGroup[i].length; j++) {
+                if (pageSelectorGroup[i][j].group !="") {
+              
+                    if ( ((pageSelectorGroup[i][j].tagName).toLowerCase().includes("img")) || (pageSelectorGroup[i][j].tagName.toLowerCase().includes("svg"))) {
+                        file2.write("await assertion.assertEqual(sts." + pageSelectorGroup[i][j].Label + ", true ,\"" + pageSelectorGroup[i][j].Label + " Values is not as expected.\");\n")
+                    }
+                    else {
+                        file2.write("await assertion.assertEqual(sts." + pageSelectorGroup[i][j].Label + ", testdata." + pageSelectorGroup[i][j].Label + ",\"" + pageSelectorGroup[i][j].Label + " Values is not as expected.\");\n")
+                    }
+
+                }
+            }
+            testCaseNumber++;
+                
+            file2.write("},\n\n")
+        }
+        
+    }
+    file2.write("}")
+}
+
 
 //test app data generator
 function generateAppDataJson(pageSelectorFile, inputFile) {
     var fileEN, fileES;
 
-    if (typeof(columnName.find(o => o.name.includes('AppLangEN'))) == "object") { //check for AppLangEng
+    if (typeof (columnName.find(o => o.name.includes('AppLangEN'))) == "object") { //check for AppLangEng
         fileEN = fs.createWriteStream(__dirname + "/outputFile/" + 'appLangEN.json');
-         fileEN.write("{\"" + inputFile + "\": \n{");
+        fileEN.write("{\"" + inputFile + "\": \n{");
 
-        if (typeof(columnName.find(o => o.name.includes('teacherAppLangEN'))) == "object") {
+        if (typeof (columnName.find(o => o.name.includes('teacherAppLangEN'))) == "object") {
 
             fileEN.write("\n" + "\"" + "teacher" + "\": \n{\n");
             console.log(pageSelectorFile.length)
@@ -236,16 +303,16 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
                 if (pageSelectorFile[i].teacherAppLangEN == '')
                     continue;
 
-                else if(i == pageSelectorFile.length-2 ) //last record excluding header
+                else if (i == pageSelectorFile.length - 2) //last record excluding header
                     fileEN.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].teacherAppLangEN + "\n")
-                
+
                 else
                     fileEN.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].teacherAppLangEN + ",\n")
             }
             fileEN.write("\n}")
         }
 
-        if (typeof(columnName.find(o => o.name.includes('studentAppLangEN'))) == "object") { 
+        if (typeof (columnName.find(o => o.name.includes('studentAppLangEN'))) == "object") {
 
             fileEN.write(",\n" + "\"" + "student" + "\": \n{\n");
 
@@ -254,9 +321,9 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
                 if (pageSelectorFile[i].studentAppLangEN == '')
                     continue;
 
-                else if(i == pageSelectorFile.length-2 ) //last record excluding header
-                    fileEN.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].studentAppLangEN + "\n")                 
-                
+                else if (i == pageSelectorFile.length - 2) //last record excluding header
+                    fileEN.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].studentAppLangEN + "\n")
+
                 else
                     fileEN.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].studentAppLangEN + ",\n")
             }
@@ -267,11 +334,11 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
     }
 
 
-    if (typeof(columnName.find(o => o.name.includes('AppLangES'))) == "object") { //check for AppLang Spanish
+    if (typeof (columnName.find(o => o.name.includes('AppLangES'))) == "object") { //check for AppLang Spanish
         fileES = fs.createWriteStream(__dirname + "/outputFile/" + 'appLangES.json');
         fileES.write("{\"" + inputFile + "\": \n{");
 
-        if (typeof(columnName.find(o => o.name.includes('teacherAppLangES'))) == "object") {
+        if (typeof (columnName.find(o => o.name.includes('teacherAppLangES'))) == "object") {
 
             fileES.write("\n" + "\"" + "teacher" + "\": \n{\n");
 
@@ -280,9 +347,9 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
                 if (pageSelectorFile[i].teacherAppLangES == '')
                     continue;
 
-                 else if(i == pageSelectorFile.length-2 ) //last record excluding header
-                    fileES.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].teacherAppLangES + "\n") 
-                
+                else if (i == pageSelectorFile.length - 2) //last record excluding header
+                    fileES.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].teacherAppLangES + "\n")
+
                 else
                     fileES.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].teacherAppLangES + ",\n")
             }
@@ -290,7 +357,7 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
 
         }
 
-        if (typeof(columnName.find(o => o.name.includes('studentAppLangES'))) == "object") { 
+        if (typeof (columnName.find(o => o.name.includes('studentAppLangES'))) == "object") {
 
             fileES.write(",\n" + "\"" + "student" + "\": \n{\n");
 
@@ -299,9 +366,9 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
                 if (pageSelectorFile[i].studentAppLangES == '')
                     continue;
 
-                else if(i == pageSelectorFile.length-2 ) //last record excluding header
-                   fileES.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].studentAppLangES + "\n")                       
-               
+                else if (i == pageSelectorFile.length - 2) //last record excluding header
+                    fileES.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].studentAppLangES + "\n")
+
                 else
                     fileES.write("\"" + pageSelectorFile[i].Label + "\" : " + pageSelectorFile[i].studentAppLangES + ",\n")
             }
@@ -368,7 +435,7 @@ function generateIsinitiazeFunction(pageSelectorFile, PageTemplate, param1) {
         }
     }
     if (flag == false) {
-        file.write("pageStatus: await  action.waitForDisplayed(this." + pageSelectorFile[0].Label + "),\n")// to be decided about the by default label to be selected
+        file.write("pageStatus: await action.waitForDisplayed(this." + pageSelectorFile[0].Label + "),\n")// to be decided about the by default label to be selected
     }
     if (param1)
         file.write(PageTemplate.isInitialized[param1])
@@ -468,7 +535,7 @@ function listDataGenerate1(pageSelectorFile) {
             file.write("await logger.logInto(await stackTrace.get());\n")
             file.write("var i, list;\n" +
                 "var " + pageSelectorFile[i].Label + "_Arr = [];\n" +
-                "list =await  action.findElements(this." + pageSelectorFile[i].Label + ");\n" +
+                "list =await action.findElements(this." + pageSelectorFile[i].Label + ");\n" +
                 "for (i = 0; i < list.length; i++) {\n" +
                 pageSelectorFile[i].Label + "_Arr[i] =await action.getText(list[i])\n" +
                 "}\n" +
@@ -582,7 +649,7 @@ function Clickfunctionindex(textcondition, selectorName, seletorRow, PageTemplat
         "await logger.logInto(await stackTrace.get());\n" +
         "var i, res;\n")
     if (textcondition != selectorName) {
-        file.write( "var " + textcondition + "  = await action.findElements(this." + textcondition + ");\n" +
+        file.write("var " + textcondition + "  = await action.findElements(this." + textcondition + ");\n" +
             "var " + selectorName + " = await action.findElements(this." + selectorName + ");\n" +
             "for (i = 0; i < " + textcondition + ".length; i++) {\n" +
             "if (((await action.getText(" + textcondition + "[i])))== " + textcondition + "Name) {\n " +
@@ -873,9 +940,9 @@ function dataPatternGenerateWithCondition(groupSelectorData, groupName, key) {
         if (!(groupSelectorData[i].extraInfo).toLowerCase().includes("pattern")) {
             if ((groupSelectorData[i].tagName).toLowerCase().includes("img") || (groupSelectorData[i].tagName).toLowerCase().includes("svg")) {
                 file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(" + groupSelectorData[i].Label + "[i]) > 0)) ? await action.waitForDisplayed(" + groupSelectorData[i].Label + "[i])  : false\n");
-            } else
+            } else {
                 file.write("obj." + groupSelectorData[i].Label + "=((await action.getElementCount(" + groupSelectorData[i].Label + "[i])  > 0)) ?await action.getText(" + groupSelectorData[i].Label + "[i])  : null\n");
-
+            }
         }
     }
     //file.write("}\n")
