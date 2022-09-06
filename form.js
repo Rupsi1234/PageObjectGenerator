@@ -11,6 +11,7 @@ var uploadPath;
 const open = require('open');
 const zip = require('express-zip');
 const { CONNREFUSED } = require("dns");
+const { kStringMaxLength } = require("buffer");
 //use the application off of express.
 var app = express();
 app.use(fileUpload());
@@ -63,6 +64,8 @@ app.get("/getvalue", function (request, response) {
     var isInitializedcheck = request.query.isInitialized;
     var getDataCheck = request.query.getData;
     var selectorJsonCheck = request.query.selectorJson;
+    var testcaseJsCheck = request.query.testcaseJs;
+    var appDataJsonCheck = request.query.appDataJson;
     var pageHeaderCheck = request.query.pageHeader;
     var param1Check = request.query.baseAction;
     var param2Check = request.query.selectorFile;
@@ -73,7 +76,7 @@ app.get("/getvalue", function (request, response) {
 
     if (inputFile != "") {
         try {
-            console.log("dff" + inputFile)
+            console.log("inputFileName" + inputFile)
             response.sendFile(__dirname + "/index2.html");
             //  response.send("Your PageObject \"" + inputFile + ".page.js\" is genrated at \"" + __dirname + "\\outputFile\\" + inputFile + '.page.js\"');
             // Traverse the selector json
@@ -103,10 +106,16 @@ app.get("/getvalue", function (request, response) {
 
                 }
             }
+            if (appDataJsonCheck) {
+                generateAppDataJson(pageSelectorFile, inputFile) //for app data generation
+            }
+            if (testcaseJsCheck) {
+                generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup);
+            }
             if (selectorJsonCheck) {
                 generatePageSelectorJson(pageSelectorFile, inputFile);
-                generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup);
-                generateAppDataJson(pageSelectorFile, inputFile) //for app data generation
+                //generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup);
+                // generateAppDataJson(pageSelectorFile, inputFile) //for app data generation
             }
             if (pageHeaderCheck) {
 
@@ -186,24 +195,154 @@ app.get("/getvalue", function (request, response) {
                 );
                 // zip method which take file path
                 // and name as objects
-                res.zip([
-                    {
-                        path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
-                        name: mySubString1 + '.page.js'
-                    },
-                    {
-                        path: __dirname + "/outputFile/" + 'selector.json',
-                        name: 'selector.json'
-                    },
-                    {
-                        path: __dirname + "/outputFile/" + 'appLangEN.json',
-                        name: 'appLangEN.json'
-                    },
-                    {
-                        path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
-                        name: mySubString1 + '.test.js'
+                console.log(fs.existsSync(__dirname + "/outputFile/" + 'selector.json'))
+                if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == true  && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == true && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == true) {
+                    res.zip([
+                        {
+                            path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                            name: mySubString1 + '.page.js'
+                        },
+                        {
+                            path: __dirname + "/outputFile/" + 'appLangEN.json',
+                            name: 'appLangEN.json'
+                        },
+                        {
+                            path: __dirname + "/outputFile/" + 'selector.json',
+                            name: 'selector.json'
+                        },
+                        {
+                            path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
+                            name: mySubString1 + '.test.js'
+                        }
+                    ])
+                }
+                else {
+                    if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == false && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == true && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == true) {
+                        res.zip([
+                            {
+                                path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                name: mySubString1 + '.page.js'
+                            },
+                            {
+                                path: __dirname + "/outputFile/" + 'appLangEN.json',
+                                name: 'appLangEN.json'
+                            },
+                            {
+                                path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
+                                name: mySubString1 + '.test.js'
+                            }
+                        ])
                     }
-                ])
+                    else {
+                        if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == true && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == false && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == true) {
+                            res.zip([
+                                {
+                                    path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                    name: mySubString1 + '.page.js'
+                                },
+                                {
+                                    path: __dirname + "/outputFile/" + 'selector.json',
+                                    name: 'selector.json'
+                                },
+                                {
+                                    path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
+                                    name: mySubString1 + '.test.js'
+                                }
+                            ])
+                        }
+
+                        else {
+                            if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == false && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == false && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == true) {
+
+                                res.zip([
+                                    {
+                                        path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                        name: mySubString1 + '.page.js'
+                                    },
+                                    {
+                                        path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
+                                        name: mySubString1 + '.test.js'
+                                    }
+                                ])
+                            }
+                            else {
+                                if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == true && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == false && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == false) {
+    
+                                    res.zip([
+                                        {
+                                            path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                            name: mySubString1 + '.page.js'
+                                        },
+                                        {
+                                            path: __dirname + "/outputFile/" + 'selector.json',
+                                            name: 'selector.json'
+                                        }
+                                    ])
+                                }
+                            else{
+
+                                if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == true && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == false && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == false) {
+    
+                                    res.zip([
+                                        {
+                                            path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                            name: mySubString1 + '.page.js'
+                                        },
+                                        {
+                                            path: __dirname + "/outputFile/" + 'selector.json',
+                                            name: 'selector.json'
+                                        }
+                                    ])
+                                }
+                            else {
+                                if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == false && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == true && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == false) {
+
+                                    res.zip([
+                                        {
+                                            path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                            name: mySubString1 + '.page.js'
+                                        },
+                                        {
+                                            path: __dirname + "/outputFile/" + 'appLangEN.json',
+                                            name: 'appLangEN.json'
+                                        }
+                                    ])
+
+                                }
+
+                                else {
+                                    if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == false && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == false && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == false) {
+                                        res.zip([
+                                            {
+                                                path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                                name: mySubString1 + '.page.js'
+                                            }
+                                        ])
+                                    }
+                                    else{
+                                    if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == true && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == true && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == false) {
+                                        res.zip([
+                                            {
+                                                path: __dirname + "/outputFile/" + mySubString1 + '.page.js',
+                                                name: mySubString1 + '.page.js'
+                                            },
+                                            {
+                                                path: __dirname + "/outputFile/" + 'appLangEN.json',
+                                                name: 'appLangEN.json'
+                                            },
+                                            {
+                                                path: __dirname + "/outputFile/" + 'selector.json',
+                                                name: 'selector.json'
+                                            }
+                                        ])
+                                    }
+                                }
+                            }}
+                        }
+                        }
+                    }
+                    }
+                }
             })
         }
         catch (err) {
@@ -230,45 +369,138 @@ function generatePageSelectorJson(pageSelectorFile, inputFile) {
     file1.write("\n}\n}")
 }
 function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
-    var testCaseNumber=1;
+    var testCaseNumber = 1;
     file2 = fs.createWriteStream(__dirname + "/outputFile/" + inputFile + '.test.js');
     file2.write("\"use strict\";\n")
     file2.write("var " + inputFile + "= require('../../pages/engageExperienceApp/" + inputFile + ".page.js');");
     file2.write("\nvar sts;\n\nmodule.exports = {\n");
     for (var i = 0; i < pageSelectorFile.length; i++) {
         if ((pageSelectorFile[i].tagName).toLowerCase().includes("button")) {
-            file2.write("ENG_" + (inputFile.substring(0,4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function () { \n")
-            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "();\n")
-            file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].Label + " are not Clicked\");")
-            if (pageSelectorFile[i].functionSupport !="") {
-                file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
-                file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+            file2.write("ENG_" + (inputFile.substring(0, 4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function () { \n")
+            // file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+            if (pageSelectorFile[i].returnValue != "" && (!(pageSelectorFile[i].returnValue).toLowerCase().includes(".page"))) {
+                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "(testdata);\n")
+                for (var k = 0; k < pageSelectorFile.length; k++) {
+                    if (pageSelectorFile[i].returnValue == pageSelectorFile[k].group) {
+                        file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\" Values are not set correctly\");\n")
+                    }
+                }
+            }
+            else {
+                if ((pageSelectorFile[i].returnValue).toLowerCase().includes(".page")) {
+                    file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "();\n")
+                    file2.write("await assertion.assertEqual(sts.pageStatus, true,\"Page is not launched. \");\n")
+                    file2.write("await assertion.assertEqual(sts.appShell.header, true,\"Page header status mismatch\");\n")
+                }
+
+                else {
+                    file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "();\n")
+                    file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].Label + " are not Clicked\");")
+                }
+            }
+            if (pageSelectorFile[i].functionSupport != "") {
+                // file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+
+                for (var p = 0; p < pageSelectorFile.length; p++) {
+                    if (pageSelectorFile[p].Label == pageSelectorFile[i].functionSupport) {
+                        if (pageSelectorFile[p].returnValue != "" && (!(pageSelectorFile[p].returnValue).toLowerCase().includes(".page"))) {
+                            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "(testdata);\n")
+                            for (var k = 0; k < pageSelectorFile.length; k++) {
+                                if (pageSelectorFile[p].returnValue == pageSelectorFile[k].group) {
+                                    file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\" Values are not set correctly\");\n")
+                                }
+                            }
+                        }
+                        else {
+                            if ((pageSelectorFile[p].returnValue).toLowerCase().includes(".page")) {
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+                                file2.write("await assertion.assertEqual(sts.pageStatus, true ,\"Page is not launched. \");\n")
+                                file2.write("await assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");")
+                            }
+
+                            else {
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+                                file2.write("await assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+                            }
+                        }
+                    }
+                }
             }
             testCaseNumber++;
             file2.write("\n},\n\n")
+
         }
+
+
         if ((pageSelectorFile[i].tagName).toLowerCase().includes("input") || (pageSelectorFile[i].tagName).toLowerCase().includes("textarea")) {
-            file2.write("ENG_" + (inputFile.substring(0,4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
+            file2.write("ENG_" + (inputFile.substring(0, 4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
             file2.write("sts = await " + inputFile + ".set_" + pageSelectorFile[i].Label + "(testdata);\n")
-            file2.write("await assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].Label + " Values are not set\");")
-            if (pageSelectorFile[i].functionSupport !="") {
-                file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
-                file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+
+            if (pageSelectorFile[i].returnValue != "" && (!(pageSelectorFile[i].returnValue).toLowerCase().includes(".page"))) {
+                for (var k = 0; k < pageSelectorFile.length; k++) {
+                    if (pageSelectorFile[i].returnValue == pageSelectorFile[k].group) {
+                        file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\" Values are not set correctly\");\n")
+                    }
+                }
+            }
+            else {
+                if ((pageSelectorFile[i].returnValue).toLowerCase().includes(".page")) {
+                    file2.write("await assertion.assertEqual(sts.pageStatus, true ,\"Page is not launched. \");\n")
+                    file2.write("await assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");\n")
+                }
+
+                else {
+                    file2.write("await assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].Label + " Values are not set\");")
+                }
+            }
+
+
+
+
+            if (pageSelectorFile[i].functionSupport != "") {
+                // file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+
+                for (var p = 0; p < pageSelectorFile.length; p++) {
+                    if (pageSelectorFile[p].Label == pageSelectorFile[i].functionSupport) {
+                        if (pageSelectorFile[p].returnValue != "" && (!(pageSelectorFile[p].returnValue).toLowerCase().includes(".page"))) {
+                            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "(testdata);\n")
+                            for (var k = 0; k < pageSelectorFile.length; k++) {
+                                if (pageSelectorFile[p].returnValue == pageSelectorFile[k].group) {
+                                    file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\" Values are not set correctly\");\n")
+                                }
+                            }
+                        }
+                        else {
+                            if ((pageSelectorFile[p].returnValue).toLowerCase().includes(".page")) {
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+                                file2.write("await assertion.assertEqual(sts.pageStatus, true,\"Page is not launched. \");\n")
+                                file2.write("await assertion.assertEqual(sts.appShell.header, true,\"Page header status mismatch\");")
+                            }
+
+                            else {
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
+                                file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+                            }
+                        }
+                    }
+                }
             }
             testCaseNumber++
             file2.write("\n},\n\n")
         }
+
     }
+
     for (var i = 1; i < pageSelectorGroup.length; i++) {
 
-        if (pageSelectorGroup[i].length > 0 && pageSelectorGroup[i][0].group!="") {
-            file2.write("ENG_" + (inputFile.substring(0,4)).toUpperCase()  + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
+        if (pageSelectorGroup[i].length > 0 && pageSelectorGroup[i][0].group != "") {
+            file2.write("ENG_" + (inputFile.substring(0, 4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
             file2.write("sts = await " + inputFile + ".getData_" + pageSelectorGroup[i][0].group + "();\n")
-          
+
             for (let j = 0; j < pageSelectorGroup[i].length; j++) {
-                if (pageSelectorGroup[i][j].group !="") {
-              
-                    if ( ((pageSelectorGroup[i][j].tagName).toLowerCase().includes("img")) || (pageSelectorGroup[i][j].tagName.toLowerCase().includes("svg"))) {
+                if (pageSelectorGroup[i][j].group != "") {
+
+                    if (((pageSelectorGroup[i][j].tagName).toLowerCase().includes("img")) || (pageSelectorGroup[i][j].tagName.toLowerCase().includes("svg"))) {
                         file2.write("await assertion.assertEqual(sts." + pageSelectorGroup[i][j].Label + ", true ,\"" + pageSelectorGroup[i][j].Label + " Values is not as expected.\");\n")
                     }
                     else {
@@ -278,10 +510,10 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
                 }
             }
             testCaseNumber++;
-                
+
             file2.write("},\n\n")
         }
-        
+
     }
     file2.write("}")
 }
@@ -298,7 +530,6 @@ function generateAppDataJson(pageSelectorFile, inputFile) {
         if (typeof (columnName.find(o => o.name.includes('teacherAppLangEN'))) == "object") {
 
             fileEN.write("\n" + "\"" + "teacher" + "\": \n{\n");
-            console.log(pageSelectorFile.length)
             for (var i = 0; i < pageSelectorFile.length; i++) {
                 if (pageSelectorFile[i].teacherAppLangEN == '')
                     continue;
