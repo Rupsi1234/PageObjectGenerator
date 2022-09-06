@@ -195,7 +195,6 @@ app.get("/getvalue", function (request, response) {
                 );
                 // zip method which take file path
                 // and name as objects
-                console.log(fs.existsSync(__dirname + "/outputFile/" + 'selector.json'))
                 if (fs.existsSync(__dirname + "/outputFile/" + 'selector.json') == true  && fs.existsSync(__dirname + "/outputFile/" + 'appLangEN.json') == true && fs.existsSync(__dirname + "/outputFile/" + mySubString1 + '.test.js') == true) {
                     res.zip([
                         {
