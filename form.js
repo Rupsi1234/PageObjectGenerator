@@ -378,10 +378,10 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
             file2.write("ENG_" + (inputFile.substring(0, 4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
             // file2.write("\nsts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
             if (pageSelectorFile[i].returnValue != "" && (!(pageSelectorFile[i].returnValue).toLowerCase().includes(".page"))&&(!(pageSelectorFile[i].returnValue).includes(","))) {
-                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "(testdata);\n")
+                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].Label + "();")
                 for (var k = 0; k < pageSelectorFile.length; k++) {
                     if (pageSelectorFile[i].returnValue == pageSelectorFile[k].group) {
-                        file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");\n")
+                        file2.write("\nawait assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");")
                     }
                 }
             }
@@ -407,26 +407,26 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
                 for (var p = 0; p < pageSelectorFile.length; p++) {
                     if (pageSelectorFile[p].Label == pageSelectorFile[i].functionSupport) {
                         if (pageSelectorFile[p].returnValue != "" && (!(pageSelectorFile[p].returnValue).toLowerCase().includes(".page"))&&(!(pageSelectorFile[i].returnValue).includes(","))) {
-                            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "(testdata);\n")
+                            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();")
                             for (var k = 0; k < pageSelectorFile.length; k++) {
                                 if (pageSelectorFile[p].returnValue == pageSelectorFile[k].group) {
-                                    file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");\n")
+                                    file2.write("\nawait assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");")
                                 }
                             }
                         }
                         else {
                             if ((pageSelectorFile[p].returnValue).toLowerCase().includes(".page")) {
-                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
-                                file2.write("await assertion.assertEqual(sts.pageStatus, true ,\"Page is not launched. \");\n")
-                                file2.write("await assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");\n")
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();")
+                                file2.write("\nawait assertion.assertEqual(sts.pageStatus, true ,\"Page is not launched. \");")
+                                file2.write("\nawait assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");")
                             }
                             if ((pageSelectorFile[i].returnValue).toLowerCase().includes(",")) {
-                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
-                                file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();")
+                                file2.write("\nawait assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
                             }
                             else {
-                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();\n")
-                                file2.write("await assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
+                                file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();")
+                                file2.write("\nawait assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].functionSupport + " are not Clicked\");")
                             }
                         }
                     }
@@ -440,19 +440,19 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
 
         if ((pageSelectorFile[i].tagName).toLowerCase().includes("input") || (pageSelectorFile[i].tagName).toLowerCase().includes("textarea")) {
             file2.write("ENG_" + (inputFile.substring(0, 4)).toUpperCase() + "_TC_" + testCaseNumber + " :   async function (testdata) { \n")
-            file2.write("sts = await " + inputFile + ".set_" + pageSelectorFile[i].Label + "(testdata);\n")
+            file2.write("sts = await " + inputFile + ".set_" + pageSelectorFile[i].Label + "();")
 
             if (pageSelectorFile[i].returnValue != "" && (!(pageSelectorFile[i].returnValue).toLowerCase().includes(".page"))&&(!(pageSelectorFile[i].returnValue).includes(","))) {
                 for (var k = 0; k < pageSelectorFile.length; k++) {
                     if (pageSelectorFile[i].returnValue == pageSelectorFile[k].group) {
-                        file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");\n")
+                        file2.write("\nawait assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");")
                     }
                 }
             }
             else {
                 if ((pageSelectorFile[i].returnValue).toLowerCase().includes(".page")) {
-                    file2.write("await assertion.assertEqual(sts.pageStatus, true ,\"Page is not launched. \");\n")
-                    file2.write("await assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");\n")
+                    file2.write("\nawait assertion.assertEqual(sts.pageStatus, true ,\"Page is not launched. \");")
+                    file2.write("\nawait assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");")
                 }
                 if ((pageSelectorFile[i].returnValue).toLowerCase().includes(",")) {
                     file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].Label + " values are not set\");\n")
@@ -471,10 +471,10 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup) {
                 for (var p = 0; p < pageSelectorFile.length; p++) {
                     if (pageSelectorFile[p].Label == pageSelectorFile[i].functionSupport) {
                         if (pageSelectorFile[p].returnValue != "" && (!(pageSelectorFile[p].returnValue).toLowerCase().includes(".page"))&&(!(pageSelectorFile[i].returnValue).includes(","))) {
-                            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "(testdata);\n")
+                            file2.write("sts = await " + inputFile + ".click_" + pageSelectorFile[i].functionSupport + "();")
                             for (var k = 0; k < pageSelectorFile.length; k++) {
                                 if (pageSelectorFile[p].returnValue == pageSelectorFile[k].group) {
-                                    file2.write("await assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");\n")
+                                    file2.write("\nawait assertion.assertEqual(sts." + pageSelectorFile[k].Label + ",tesdata." + pageSelectorFile[k].Label + ",\""+ pageSelectorFile[k].Label + " text mismatch\");")
                                 }
                             }
                         }
