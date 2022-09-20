@@ -376,7 +376,7 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup, appShe
     file2.write("\"use strict\";\n")
     file2.write("var " + inputFile + "= require('../../pages/engageExperienceApp/" + inputFile + ".page.js');");
     if (appShellPageCheck)
-    file2.write("var appShell = require('../../pages/engageExperienceApp/appShell.page');");
+    file2.write("\nvar appShell = require('../../pages/engageExperienceApp/appShell.page');");
     file2.write("\nvar sts;\n\nmodule.exports = {\n");
     for (var i = 0; i < pageSelectorFile.length; i++) {
         if ((pageSelectorFile[i].tagName).toLowerCase().includes("button")) {
