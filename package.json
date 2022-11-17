@@ -2,7 +2,7 @@
   "name": "engageAutomation",
   "version": "0.9.4",
   "description": "",
-  "main": "index.js",
+  "main": "form.js",
   "scripts": {
     "test": "./node_modules/.bin/wdio wdio.conf.js",
     "start": "node form.js",
@@ -36,5 +36,9 @@
     "rimraf": "^3.0.2",
     "xmlhttprequest": "1.8.0",
     "yargs": "15.4.1"
+  },
+  
+  "engines": {
+    "node": ">=14"
   }
 }
