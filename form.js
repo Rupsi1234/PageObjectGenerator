@@ -5,7 +5,7 @@ const cssProperty = require('./property.json');
 var file, pageSelectorFile, arr = [], pageSelectorGroup = [], k, columnName;
 var parse = require('csv-parse');
 const fileUpload = require('express-fileupload');
-const Port = process.env.PORT || 3001;
+const Port = process.env.PORT || 8000;
 var sampleFile;
 var uploadPath;
 const open = require('open');
@@ -363,8 +363,8 @@ app.get("/getvalue", function (request, response) {
 });
 
 //start the server
-app.listen(Port);
-open('http://localhost:'+Port);
+app.listen(8080);
+open('http://localhost:8080');
 console.log("Please launch http://localhost:8080 in your browser url");
 
 function generatePageSelectorJson(pageSelectorFile, inputFile) {
