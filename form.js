@@ -73,7 +73,6 @@ app.get("/getvalue", function (request, response) {
     var clickFunctionsCheck = request.query.clickFunction;
     var setValueFunctionsCheck = request.query.setValueFunction;
     var appShellPageCheck = request.query.appShellPage;
-    var dummyExecutionJsonCheck = request.query.dummyExecutionJson;
 
     if (inputFile != "") {
         try {
@@ -216,10 +215,6 @@ app.get("/getvalue", function (request, response) {
                         {
                             path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
                             name: mySubString1 + '.test.js'
-                        },
-                        {
-                            path: __dirname + "/outputFile/dummy.json",
-                            name:  "dummy.json"
                         }
                     ])
                 }
