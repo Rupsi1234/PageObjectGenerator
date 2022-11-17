@@ -73,6 +73,7 @@ app.get("/getvalue", function (request, response) {
     var clickFunctionsCheck = request.query.clickFunction;
     var setValueFunctionsCheck = request.query.setValueFunction;
     var appShellPageCheck = request.query.appShellPage;
+    var dummyExecutionJsonCheck = request.query.dummyExecutionJson;
 
     if (inputFile != "") {
         try {
@@ -215,6 +216,10 @@ app.get("/getvalue", function (request, response) {
                         {
                             path: __dirname + "/outputFile/" + mySubString1 + '.test.js',
                             name: mySubString1 + '.test.js'
+                        },
+                        {
+                            path: __dirname + "/outputFile/dummy.json",
+                            name:  "dummy.json"
                         }
                     ])
                 }
@@ -358,8 +363,8 @@ app.get("/getvalue", function (request, response) {
 });
 
 //start the server
-app.listen(8080);
-open('http://localhost:8080');
+app.listen(Port);
+open('http://localhost:'+Port);
 console.log("Please launch http://localhost:8080 in your browser url");
 
 function generatePageSelectorJson(pageSelectorFile, inputFile) {
@@ -460,10 +465,10 @@ function generateTestcase(pageSelectorFile, inputFile, pageSelectorGroup, appShe
                     file2.write("\nawait assertion.assertEqual(sts.appShell.header, true ,\"Page header status mismatch\");")
                 }
                 if ((pageSelectorFile[i].returnValue).toLowerCase().includes(",")) {
-                    file2.write("await assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].Label + " values are not set\");\n")
+                    file2.write("\nawait assertion.assertEqual(sts, true,\"" + pageSelectorFile[i].Label + " values are not set\");\n")
                 }
                 else {
-                    file2.write("await assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].Label + " values are not set\");\n")
+                    file2.write("\nawait assertion.assertEqual(sts, true ,\"" + pageSelectorFile[i].Label + " values are not set\");\n")
                 }
             }
 
