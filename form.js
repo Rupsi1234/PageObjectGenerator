@@ -10,8 +10,6 @@ var sampleFile;
 var uploadPath;
 const open = require('open');
 const zip = require('express-zip');
-const { CONNREFUSED } = require("dns");
-const { kStringMaxLength } = require("buffer");
 //use the application off of express.
 var app = express();
 app.use(fileUpload());
@@ -358,8 +356,8 @@ app.get("/getvalue", function (request, response) {
 });
 
 //start the server
-app.listen(8080);
-open('http://localhost:8080');
+//app.listen(8080);
+open('http://localhost:'+Port);
 console.log("Please launch http://localhost:8080 in your browser url");
 
 function generatePageSelectorJson(pageSelectorFile, inputFile) {
